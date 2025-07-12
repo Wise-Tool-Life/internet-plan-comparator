@@ -1,0 +1,38 @@
+[
+  {
+    "seller": "인터넷의 신",
+    "carrier": "SK",
+    "speed": 500,
+    "tvChannels": 234,
+    "contractYears": 3,
+    "monthlyFee": 45000,
+    "gift": 470000,
+    "setupFee": 38000,
+    "url": "https://example.com/sk_promo",
+    "phone": "1588-0001"
+  },
+  {
+    "seller": "기가 요정",
+    "carrier": "KT",
+    "speed": 1000,
+    "tvChannels": 260,
+    "contractYears": 3,
+    "monthlyFee": 52000,
+    "gift": 450000,
+    "setupFee": 38000,
+    "url": "https://example.com/kt_promo",
+    "phone": "1588-0002"
+  },
+  {
+    "seller": "유플러스 킹",
+    "carrier": "LGU+",
+    "speed": 500,
+    "tvChannels": 212,
+    "contractYears": 3,
+    "monthlyFee": 42000,
+    "gift": 460000,
+    "setupFee": 0,
+    "url": "https://example.com/lgu_promo",
+    "phone": "1588-0003"
+  }
+]

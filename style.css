@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.container-fluid {
+    max-width: 1400px;
+}
+
+th {
+    cursor: pointer;
+    user-select: none;
+}
+
+th.sortable .bi {
+    font-size: 0.8em;
+    color: #999;
+    transition: color 0.2s;
+}
+
+th.sortable:hover .bi {
+    color: #333;
+}
+
+th.sorted-asc .bi::before {
+    content: "\f130"; /* Bootstrap icon for arrow-up */
+    color: #0d6efd;
+}
+
+th.sorted-desc .bi::before {
+    content: "\f12d"; /* Bootstrap icon for arrow-down */
+    color: #0d6efd;
+}
+
+.badge {
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.btn-contact {
+    white-space: nowrap;
+}

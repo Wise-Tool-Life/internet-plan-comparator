@@ -1,1 +1,1 @@
-Improve Supabase insertion robustness and error logging
+Fix Supabase is not defined error by moving client initialization

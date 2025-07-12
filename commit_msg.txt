@@ -1,1 +1,1 @@
-Add 'defer' attribute to script tags for proper loading order
+Remove 'defer' attribute from all script tags for synchronous loading

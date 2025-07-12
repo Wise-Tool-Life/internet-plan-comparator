@@ -1,1 +1,1 @@
-Fix Supabase is not defined error by moving client initialization
+Add 'defer' attribute to script tags for proper loading order

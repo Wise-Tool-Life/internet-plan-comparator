@@ -120,12 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const newPlan = {
             seller: document.getElementById('inputSeller').value.trim() || null,
             carrier: document.getElementById('inputCarrier').value.trim(),
-            speed: parseInt(document.getElementById('inputSpeed').value) || null,
-            tvChannels: parseInt(document.getElementById('inputTvChannels').value) || null,
-            contractYears: parseInt(document.getElementById('inputContractYears').value) || null,
-            monthlyFee: parseInt(document.getElementById('inputMonthlyFee').value) || null,
-            gift: parseInt(document.getElementById('inputGift').value) || null,
-            setupFee: parseInt(document.getElementById('inputSetupFee').value) || null,
+            speed: parseInt(document.getElementById('inputSpeed').value) || 0, // null 대신 0으로 변경
+            tvChannels: parseInt(document.getElementById('inputTvChannels').value) || 0, // null 대신 0으로 변경
+            contractYears: parseInt(document.getElementById('inputContractYears').value) || 0, // null 대신 0으로 변경
+            monthlyFee: parseInt(document.getElementById('inputMonthlyFee').value) || 0, // null 대신 0으로 변경
+            gift: parseInt(document.getElementById('inputGift').value) || 0, // null 대신 0으로 변경
+            setupFee: parseInt(document.getElementById('inputSetupFee').value) || 0, // null 대신 0으로 변경
             url: document.getElementById('inputUrl').value.trim() || null,
             phone: document.getElementById('inputPhone').value.trim() || null
         };
@@ -150,6 +150,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        console.log("Attempting to add new plan:", newPlan);
+
         try {
             // Supabase에 새 요금제 삽입
             const { data, error } = await supabase
@@ -161,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw error;
             }
 
-            console.log("New plan added to Supabase:", data);
+            console.log("New plan added to Supabase successfully:", data);
 
             // 삽입된 데이터를 plansData에 추가하고 다시 렌더링
             // Supabase에서 반환된 데이터는 이미 계산된 필드가 없으므로 다시 계산
@@ -172,8 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
             addPlanForm.reset();
 
         } catch (error) {
-            console.error("Error adding new plan to Supabase:", error.message);
-            alert(`요금제 추가 실패: ${error.message}`);
+            console.error("Error adding new plan to Supabase:", error.message, error);
+            alert(`요금제 추가 실패: ${error.message}\n자세한 내용은 콘솔을 확인해주세요.`);
         }
     });
 

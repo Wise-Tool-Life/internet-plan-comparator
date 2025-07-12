@@ -1,1 +1,1 @@
-Integrate Supabase for persistent data storage
+Improve Supabase insertion robustness and error logging

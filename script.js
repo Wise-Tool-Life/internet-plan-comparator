@@ -10,12 +10,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // 데이터 로드 및 테이블 렌더링
     async function loadPlans() {
         try {
-            const response = await fetch('data.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            // 1. localStorage에서 데이터 로드 시도
+            const storedPlans = localStorage.getItem('internetPlans');
+            if (storedPlans) {
+                plansData = JSON.parse(storedPlans);
+                // localStorage에 저장된 데이터에도 계산된 필드 추가 (혹시 이전 버전 데이터일 경우)
+                plansData = plansData.map(plan => calculateFees(plan));
+                console.log("Loaded plans from localStorage.", plansData);
+            } else {
+                // 2. localStorage에 데이터가 없으면 data.json에서 로드
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const rawData = await response.json();
+                plansData = rawData.map(plan => calculateFees(plan));
+                // 처음 로드 시 localStorage에 저장
+                localStorage.setItem('internetPlans', JSON.stringify(plansData));
+                console.log("Loaded plans from data.json and saved to localStorage.", plansData);
             }
-            const rawData = await response.json();
-            plansData = rawData.map(plan => calculateFees(plan));
             applyFiltersAndRender();
         } catch (error) {
             console.error("Error loading plan data:", error);
@@ -144,6 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
         plansData.push(calculatedNewPlan);
         applyFiltersAndRender();
 
+        // 3. localStorage에 업데이트된 데이터 저장
+        localStorage.setItem('internetPlans', JSON.stringify(plansData));
+
         // 폼 초기화
         addPlanForm.reset();
     });
@@ -159,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTable(filteredPlans);
             updateSortIcons();
         });
-    });
+    }
 
     function sortData(data, column, order) {
         data.sort((a, b) => {

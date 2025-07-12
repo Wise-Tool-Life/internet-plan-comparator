@@ -101,22 +101,32 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault(); // 폼 기본 제출 동작 방지
 
         const newPlan = {
-            seller: document.getElementById('inputSeller').value,
-            carrier: document.getElementById('inputCarrier').value,
+            seller: document.getElementById('inputSeller').value.trim(),
+            carrier: document.getElementById('inputCarrier').value.trim(),
             speed: parseInt(document.getElementById('inputSpeed').value),
             tvChannels: parseInt(document.getElementById('inputTvChannels').value),
             contractYears: parseInt(document.getElementById('inputContractYears').value),
             monthlyFee: parseInt(document.getElementById('inputMonthlyFee').value),
             gift: parseInt(document.getElementById('inputGift').value),
             setupFee: parseInt(document.getElementById('inputSetupFee').value),
-            url: document.getElementById('inputUrl').value,
-            phone: document.getElementById('inputPhone').value
+            url: document.getElementById('inputUrl').value.trim(),
+            phone: document.getElementById('inputPhone').value.trim()
         };
 
-        // 간단한 유효성 검사 (필수 필드 확인)
-        for (const key in newPlan) {
-            if (key !== 'url' && key !== 'phone' && (newPlan[key] === '' || isNaN(newPlan[key]))) {
-                alert(`${key} 필드를 올바르게 입력해주세요.`);
+        // 필수 문자열 필드 유효성 검사
+        const requiredStringFields = ['seller', 'carrier'];
+        for (const field of requiredStringFields) {
+            if (newPlan[field] === '') {
+                alert(`${field} 필드를 올바르게 입력해주세요.`);
+                return;
+            }
+        }
+
+        // 필수 숫자 필드 유효성 검사
+        const requiredNumberFields = ['speed', 'tvChannels', 'contractYears', 'monthlyFee', 'gift', 'setupFee'];
+        for (const field of requiredNumberFields) {
+            if (isNaN(newPlan[field])) {
+                alert(`${field} 필드를 올바른 숫자로 입력해주세요.`);
                 return;
             }
         }

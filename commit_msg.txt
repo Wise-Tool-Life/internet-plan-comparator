@@ -1,1 +1,1 @@
-Initial commit for internet plan comparator
+Fix form validation for string and number fields

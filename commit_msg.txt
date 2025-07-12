@@ -1,1 +1,1 @@
-Adjust form validation: make carrier, speed, contractYears, monthlyFee required
+Remove 'required' attribute from optional form fields in HTML

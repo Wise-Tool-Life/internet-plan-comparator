@@ -1,9 +1,10 @@
 const SUPABASE_URL = 'https://gerymbwresrlgdoymdev.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlcnltYndyZXNybGdkb3ltZGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMjE2MjAsImV4cCI6MjA2Nzg5NzYyMH0.efufTU6bjgn09A9wX_xPbSJIUQrLfFn9SROD6jtWJ4s';
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Supabase 클라이언트 초기화를 DOMContentLoaded 안으로 이동
-    const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase;
+
+function initApp() {
+    supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const tableBody = document.getElementById('plan-table-body');
     const addPlanForm = document.getElementById('add-plan-form');
@@ -212,4 +213,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 초기 데이터 로드
     loadPlans();
-});
+}

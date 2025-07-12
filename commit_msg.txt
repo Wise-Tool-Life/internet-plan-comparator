@@ -1,1 +1,1 @@
-Remove 'defer' attribute from all script tags for synchronous loading
+Refactor script.js into initApp() and use onload for Supabase CDN

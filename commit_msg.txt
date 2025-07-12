@@ -1,1 +1,1 @@
-Refactor script.js into initApp() and use onload for Supabase CDN
+Implement polling for Supabase client initialization

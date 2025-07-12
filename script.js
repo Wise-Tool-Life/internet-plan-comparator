@@ -26,8 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 요금 계산 함수
     function calculateFees(plan) {
         const totalMonths = plan.contractYears * 12;
-        const totalFee = (plan.monthlyFee * totalMonths) + plan.setupFee;
-        const realMonthlyFee = (totalFee - plan.gift) / totalMonths;
+        // 선택 항목이 비어있을 경우 0으로 처리하여 계산 오류 방지
+        const monthlyFee = plan.monthlyFee || 0;
+        const setupFee = plan.setupFee || 0;
+        const gift = plan.gift || 0;
+
+        const totalFee = (monthlyFee * totalMonths) + setupFee;
+        const realMonthlyFee = (totalFee - gift) / totalMonths;
         return { ...plan, totalFee, realMonthlyFee };
     }
 
@@ -42,19 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
         data.forEach(plan => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${plan.seller}</td>
+                <td>${plan.seller || '-'}</td>
                 <td><span class="badge bg-secondary">${plan.carrier}</span></td>
                 <td>${plan.speed}Mbps</td>
-                <td>${plan.tvChannels}개</td>
+                <td>${plan.tvChannels || '-'}개</td>
                 <td>${plan.contractYears}년</td>
                 <td>${plan.monthlyFee.toLocaleString()}원</td>
-                <td>${plan.gift.toLocaleString()}원</td>
-                <td>${plan.setupFee.toLocaleString()}원</td>
+                <td>${plan.gift ? plan.gift.toLocaleString() + '원' : '-'}</td>
+                <td>${plan.setupFee ? plan.setupFee.toLocaleString() + '원' : '-'}</td>
                 <td>${plan.totalFee.toLocaleString()}원</td>
                 <td><strong>${Math.round(plan.realMonthlyFee).toLocaleString()}원</strong></td>
                 <td>
-                    <a href="${plan.url}" target="_blank" class="btn btn-sm btn-primary mb-1 btn-contact">웹사이트</a>
-                    <a href="tel:${plan.phone}" class="btn btn-sm btn-outline-secondary btn-contact">전화걸기</a>
+                    ${plan.url ? `<a href="${plan.url}" target="_blank" class="btn btn-sm btn-primary mb-1 btn-contact">웹사이트</a>` : ''}
+                    ${plan.phone ? `<a href="tel:${plan.phone}" class="btn btn-sm btn-outline-secondary btn-contact">전화걸기</a>` : ''}
                 </td>
             `;
             tableBody.appendChild(row);
@@ -100,33 +105,36 @@ document.addEventListener('DOMContentLoaded', () => {
     addPlanForm.addEventListener('submit', (e) => {
         e.preventDefault(); // 폼 기본 제출 동작 방지
 
+        // 입력 필드 값 가져오기 (선택 항목은 비어있을 경우 null 또는 0으로 처리)
         const newPlan = {
-            seller: document.getElementById('inputSeller').value.trim(),
+            seller: document.getElementById('inputSeller').value.trim() || null,
             carrier: document.getElementById('inputCarrier').value.trim(),
-            speed: parseInt(document.getElementById('inputSpeed').value),
-            tvChannels: parseInt(document.getElementById('inputTvChannels').value),
-            contractYears: parseInt(document.getElementById('inputContractYears').value),
-            monthlyFee: parseInt(document.getElementById('inputMonthlyFee').value),
-            gift: parseInt(document.getElementById('inputGift').value),
-            setupFee: parseInt(document.getElementById('inputSetupFee').value),
-            url: document.getElementById('inputUrl').value.trim(),
-            phone: document.getElementById('inputPhone').value.trim()
+            speed: parseInt(document.getElementById('inputSpeed').value) || null,
+            tvChannels: parseInt(document.getElementById('inputTvChannels').value) || null,
+            contractYears: parseInt(document.getElementById('inputContractYears').value) || null,
+            monthlyFee: parseInt(document.getElementById('inputMonthlyFee').value) || null,
+            gift: parseInt(document.getElementById('inputGift').value) || null,
+            setupFee: parseInt(document.getElementById('inputSetupFee').value) || null,
+            url: document.getElementById('inputUrl').value.trim() || null,
+            phone: document.getElementById('inputPhone').value.trim() || null
         };
 
-        // 필수 문자열 필드 유효성 검사
-        const requiredStringFields = ['seller', 'carrier'];
-        for (const field of requiredStringFields) {
-            if (newPlan[field] === '') {
-                alert(`${field} 필드를 올바르게 입력해주세요.`);
+        // 필수 항목 유효성 검사
+        const requiredFields = [
+            { id: 'inputCarrier', name: '통신사', type: 'string' },
+            { id: 'inputSpeed', name: '인터넷 속도', type: 'number' },
+            { id: 'inputContractYears', name: '약정기간', type: 'number' },
+            { id: 'inputMonthlyFee', name: '월요금', type: 'number' }
+        ];
+
+        for (const field of requiredFields) {
+            const value = document.getElementById(field.id).value.trim();
+            if (value === '') {
+                alert(`${field.name} 필드는 필수 항목입니다.`);
                 return;
             }
-        }
-
-        // 필수 숫자 필드 유효성 검사
-        const requiredNumberFields = ['speed', 'tvChannels', 'contractYears', 'monthlyFee', 'gift', 'setupFee'];
-        for (const field of requiredNumberFields) {
-            if (isNaN(newPlan[field])) {
-                alert(`${field} 필드를 올바른 숫자로 입력해주세요.`);
+            if (field.type === 'number' && isNaN(parseInt(value))) {
+                alert(`${field.name} 필드는 숫자로 입력해주세요.`);
                 return;
             }
         }

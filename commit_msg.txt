@@ -1,1 +1,1 @@
-Fix form validation for string and number fields
+Adjust form validation: make carrier, speed, contractYears, monthlyFee required

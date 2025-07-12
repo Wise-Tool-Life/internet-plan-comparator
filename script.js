@@ -1,3 +1,8 @@
+const SUPABASE_URL = 'https://gerymbwresrlgdoymdev.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlcnltYndyZXNybGdkb3ltZGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMjE2MjAsImV4cCI6MjA2Nzg5NzYyMH0.efufTU6bjgn09A9wX_xPbSJIUQrLfFn9SROD6jtWJ4s';
+
+const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('plan-table-body');
     const addPlanForm = document.getElementById('add-plan-form');
@@ -10,29 +15,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // 데이터 로드 및 테이블 렌더링
     async function loadPlans() {
         try {
-            // 1. localStorage에서 데이터 로드 시도
-            const storedPlans = localStorage.getItem('internetPlans');
-            if (storedPlans) {
-                plansData = JSON.parse(storedPlans);
-                // localStorage에 저장된 데이터에도 계산된 필드 추가 (혹시 이전 버전 데이터일 경우)
-                plansData = plansData.map(plan => calculateFees(plan));
-                console.log("Loaded plans from localStorage.", plansData);
-            } else {
-                // 2. localStorage에 데이터가 없으면 data.json에서 로드
-                const response = await fetch('data.json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const rawData = await response.json();
-                plansData = rawData.map(plan => calculateFees(plan));
-                // 처음 로드 시 localStorage에 저장
-                localStorage.setItem('internetPlans', JSON.stringify(plansData));
-                console.log("Loaded plans from data.json and saved to localStorage.", plansData);
+            // Supabase에서 데이터 불러오기
+            const { data, error } = await supabase
+                .from('internet_plans') // 테이블 이름
+                .select('*');
+
+            if (error) {
+                throw error;
             }
+
+            plansData = data.map(plan => calculateFees(plan));
             applyFiltersAndRender();
+            console.log("Loaded plans from Supabase.", plansData);
+
         } catch (error) {
-            console.error("Error loading plan data:", error);
-            tableBody.innerHTML = `<tr><td colspan="11" class="text-center">데이터를 불러오는 데 실패했습니다.</td></tr>`;
+            console.error("Error loading plan data from Supabase:", error.message);
+            tableBody.innerHTML = `<tr><td colspan="11" class="text-center">데이터를 불러오는 데 실패했습니다. Supabase 연결 또는 테이블 설정을 확인해주세요.</td></tr>`;
         }
     }
 
@@ -115,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 새 요금제 추가 폼 제출 이벤트 리스너
-    addPlanForm.addEventListener('submit', (e) => {
+    addPlanForm.addEventListener('submit', async (e) => {
         e.preventDefault(); // 폼 기본 제출 동작 방지
 
         // 입력 필드 값 가져오기 (선택 항목은 비어있을 경우 null 또는 0으로 처리)
@@ -152,16 +150,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 계산된 값 추가
-        const calculatedNewPlan = calculateFees(newPlan);
-        plansData.push(calculatedNewPlan);
-        applyFiltersAndRender();
+        try {
+            // Supabase에 새 요금제 삽입
+            const { data, error } = await supabase
+                .from('internet_plans')
+                .insert([newPlan])
+                .select(); // 삽입된 데이터 반환
 
-        // 3. localStorage에 업데이트된 데이터 저장
-        localStorage.setItem('internetPlans', JSON.stringify(plansData));
+            if (error) {
+                throw error;
+            }
 
-        // 폼 초기화
-        addPlanForm.reset();
+            console.log("New plan added to Supabase:", data);
+
+            // 삽입된 데이터를 plansData에 추가하고 다시 렌더링
+            // Supabase에서 반환된 데이터는 이미 계산된 필드가 없으므로 다시 계산
+            plansData.push(calculateFees(data[0]));
+            applyFiltersAndRender();
+
+            // 폼 초기화
+            addPlanForm.reset();
+
+        } catch (error) {
+            console.error("Error adding new plan to Supabase:", error.message);
+            alert(`요금제 추가 실패: ${error.message}`);
+        }
     });
 
     // 정렬 기능
@@ -175,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTable(filteredPlans);
             updateSortIcons();
         });
-    }
+    });
 
     function sortData(data, column, order) {
         data.sort((a, b) => {

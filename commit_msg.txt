@@ -1,1 +1,1 @@
-Implement localStorage to persist user-added plans (client-side only)
+Integrate Supabase for persistent data storage
